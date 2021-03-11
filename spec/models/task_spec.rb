@@ -2,51 +2,36 @@ require 'rails_helper'
 
 RSpec.describe Task, type: :model do
   describe 'validation' do
-    let(:user) { FactoryBot.create(:user) }
     it 'is valid with all attributes' do
-      task = Task.new(
-        title: "test",
-        status: 0,
-        user: user
-      )
+      task = build(:task)
       expect(task).to be_valid
+      expect(task.errors).to be_blank
     end
+
     it 'is invalid without title' do 
-      task = Task.new(title: nil)
-      task.valid?
-      expect(task.errors[:title]).to include("can't be blank")
+      task_without_title = build(:task, title: nil)
+      expect(task_without_title).to be_invalid
+      expect(task_without_title.errors[:title]).to eq ["can't be blank"]
     end
+
     it 'is invalid without status' do
-      task = Task.new(status: nil)
-      task.valid?
-      expect(task.errors[:status]).to include("can't be blank")
+      task_without_status = FactoryBot.build(:task, status: nil)
+      expect(task_without_status).to be_invalid
+      expect(task_without_status.errors[:status]).to eq ["can't be blank"]
     end
+
     it 'is invalid with a duplicate title' do
-      Task.create(
-        title: "test",
-        status: 0,
-        user: user
-      )
-      task = Task.new(
-        title: "test",
-        status: 0,
-        user: user
-      )
-      task.valid?
-      expect(task.errors[:title]).to include("has already been taken")
+      task = create(:task)
+      task_duplicate_title = FactoryBot.build(:task, title: task.title)
+      expect(task_duplicate_title).to be_invalid
+      expect(task_duplicate_title.errors[:title]).to eq ["has already been taken"]
     end
+    
     it 'is valid with another title' do
-      Task.create(
-        title: "test",
-        status: 0,
-        user: user
-      )
-      task = Task.new(
-        title: "practice",
-        status: 0,
-        user: user
-      )
-      expect(task).to be_valid
+      task = FactoryBot.create(:task)
+      task_with_another_title = FactoryBot.build(:task, title: "another_title")
+      expect(task_with_another_title).to be_valid
+      expect(task_with_another_title.errors).to be_blank
     end
   end
 end
