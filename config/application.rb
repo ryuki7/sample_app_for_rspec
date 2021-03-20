@@ -28,7 +28,6 @@ module RspecSample
     # the framework and any gems in your application.
 
     # Don't generate system test files.
-    config.autoload_paths += Dir.glob("#{config.root}/spec/support")
     config.generators.system_tests = nil
   end
 end
